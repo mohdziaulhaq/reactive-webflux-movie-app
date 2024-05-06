@@ -27,7 +27,7 @@ class MoviesInfoControllerIntgTest {
     @Autowired
     MovieInfoRepository movieInfoRepository;
 
-    static String MOVIES_INFO_URL = "/v1/movieinfos"
+    static String MOVIES_INFO_URL = "/v1/movieinfos";
 
     @BeforeEach
     void setUp(){
@@ -61,8 +61,83 @@ class MoviesInfoControllerIntgTest {
                             assert savedMovieInfo != null;
                             assert savedMovieInfo.getMovieInfoId()!= null;
 
-                        })
+                        });
 
 
     }
+
+    @Test
+    void getAllMovieInfos(){
+        webTestClient
+                .get()
+                .uri(MOVIES_INFO_URL)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBodyList(MovieInfo.class)
+                .hasSize(3);
+
+
+    }
+
+    @Test
+    void getAllMovieInfoById(){
+        var movieInfoId = "abc";
+        webTestClient
+                .get()
+                .uri(MOVIES_INFO_URL+"/{id}",movieInfoId)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+//                .expectBody(MovieInfo.class)
+//                .consumeWith(movieInfoEntityExchangeResult -> {
+//                    var movieInfo = movieInfoEntityExchangeResult.getResponseBody();
+//                    assertNotNull(movieInfo);
+//                });
+
+                .expectBody()
+                .jsonPath("$.name").isEqualTo("The Dark Knight Rises");
+
+    }
+
+    @Test
+    void updateMovieInfo() {
+
+        var movieInfo = new MovieInfo(null, "Batman Beguns", 2005, List.of("Christian Bale", "Micheal Cane"), LocalDate.parse("2005-06-15"));
+        var movieInfoId = "abc";
+        webTestClient
+                .put()
+                .uri(MOVIES_INFO_URL+"/{id}",movieInfoId)
+                .bodyValue(movieInfo)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody(MovieInfo.class)
+                .consumeWith(movieInfoEntityExchangeResult -> {
+                    var updatedMovieInfo = movieInfoEntityExchangeResult.getResponseBody();
+                    assert updatedMovieInfo != null;
+                    assert updatedMovieInfo.getMovieInfoId()!= null;
+                    assertEquals("Batman Beguns", updatedMovieInfo.getName());
+
+                });
+
+
+    }
+
+    @Test
+    void deleteMovieInfo(){
+
+        var movieInfoId = "abc";
+        webTestClient
+                .delete()
+                .uri(MOVIES_INFO_URL+"/{id}",movieInfoId)
+                .exchange()
+                .expectStatus()
+                .isNoContent();
+
+
+
+    }
+
+
 }
