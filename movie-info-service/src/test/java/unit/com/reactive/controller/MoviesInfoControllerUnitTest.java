@@ -9,10 +9,13 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
 
 @WebFluxTest(controllers = MoviesInfoController.class)
@@ -43,5 +46,62 @@ public class MoviesInfoControllerUnitTest {
                 .is2xxSuccessful()
                 .expectBodyList(MovieInfo.class)
                 .hasSize(3);
+    }
+
+    @Test
+    void addMovieInfo() {
+
+        var movieInfo = new MovieInfo(null, "Batman Begins1", 2005, List.of("Christian Bale", "Micheal Cane"), LocalDate.parse("2005-06-15"));
+
+        when(moviesInfoServiceMock.addMovieInfo(isA(MovieInfo.class))).thenReturn(
+                Mono.just(new MovieInfo("mockId", "Batman Begins1", 2005, List.of("Christian Bale", "Micheal Cane"), LocalDate.parse("2005-06-15"))
+                ));
+
+        webTestClient
+                .post()
+                .uri("/v1/movieinfos")
+                .bodyValue(movieInfo)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody(MovieInfo.class)
+                .consumeWith(movieInfoEntityExchangeResult -> {
+                    var savedMovieInfo = movieInfoEntityExchangeResult.getResponseBody();
+                    assert savedMovieInfo != null;
+                    assert savedMovieInfo.getMovieInfoId()!= null;
+                    assertEquals("mockId", savedMovieInfo.getMovieInfoId());
+
+                });
+
+
+    }
+
+    @Test
+    void updateMovieInfo() {
+
+        var movieInfo = new MovieInfo(null, "Batman Beguns", 2005, List.of("Christian Bale", "Micheal Cane"), LocalDate.parse("2005-06-15"));
+        var movieInfoId = "abc";
+
+        when(moviesInfoServiceMock.updateMovieInfo(isA(MovieInfo.class), isA(String.class))).thenReturn(
+                Mono.just(new MovieInfo(movieInfoId, "Batman Beguns", 2005, List.of("Christian Bale", "Micheal Cane"), LocalDate.parse("2005-06-15"))
+                ));
+
+        webTestClient
+                .put()
+                .uri(MOVIES_INFO_URL+"/{id}",movieInfoId)
+                .bodyValue(movieInfo)
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .expectBody(MovieInfo.class)
+                .consumeWith(movieInfoEntityExchangeResult -> {
+                    var updatedMovieInfo = movieInfoEntityExchangeResult.getResponseBody();
+                    assert updatedMovieInfo != null;
+                    assert updatedMovieInfo.getMovieInfoId()!= null;
+                    assertEquals("Batman Beguns", updatedMovieInfo.getName());
+
+                });
+
+
     }
 }
