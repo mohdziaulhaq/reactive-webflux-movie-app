@@ -108,11 +108,7 @@ public class MoviesInfoControllerUnitTest {
     @Test
     void addMovieInfo_validation() {
 
-        var movieInfo = new MovieInfo(null, "", -2005, List.of("Christian Bale", "Micheal Cane"), LocalDate.parse("2005-06-15"));
-
-        when(moviesInfoServiceMock.addMovieInfo(isA(MovieInfo.class))).thenReturn(
-                Mono.just(new MovieInfo("mockId", "Batman Begins1", 2005, List.of("Christian Bale", "Micheal Cane"), LocalDate.parse("2005-06-15"))
-                ));
+        var movieInfo = new MovieInfo(null, "", -2005, List.of(""), LocalDate.parse("2005-06-15"));
 
         webTestClient
                 .post()
@@ -125,7 +121,9 @@ public class MoviesInfoControllerUnitTest {
                 .consumeWith(stringEntityExchangeResult -> {
                     var responseBody = stringEntityExchangeResult.getResponseBody();
                     System.out.println("responseBody : "+responseBody);
+                    var expectedErrorMessage = "movieInfo.cast should be present,movieInfo.name must be present,movieInfo.year must be a positive value";
                     assert responseBody != null;
+                    assertEquals(expectedErrorMessage,responseBody);
                 })
 //                .expectBody(MovieInfo.class)
 //                .consumeWith(movieInfoEntityExchangeResult -> {
