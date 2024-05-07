@@ -139,5 +139,29 @@ class MoviesInfoControllerIntgTest {
 
     }
 
+    @Test
+    void updateMovieInfo_notfound() {
+
+        var movieInfo = new MovieInfo(null, "Batman Beguns", 2005, List.of("Christian Bale", "Micheal Cane"), LocalDate.parse("2005-06-15"));
+        var movieInfoId = "def";
+        webTestClient
+                .put()
+                .uri(MOVIES_INFO_URL+"/{id}",movieInfoId)
+                .bodyValue(movieInfo)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+//                .expectBody(MovieInfo.class)
+//                .consumeWith(movieInfoEntityExchangeResult -> {
+//                    var updatedMovieInfo = movieInfoEntityExchangeResult.getResponseBody();
+//                    assert updatedMovieInfo != null;
+//                    assert updatedMovieInfo.getMovieInfoId()!= null;
+//                    assertEquals("Batman Beguns", updatedMovieInfo.getName());
+//
+//                })
+        ;
+
+
+    }
 
 }
