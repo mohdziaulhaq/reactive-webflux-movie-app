@@ -1,5 +1,8 @@
 package com.reactive.domain;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +19,12 @@ import java.util.List;
 public class MovieInfo {
     @Id
     private String movieInfoId;
+
+    @NotBlank(message = "movieInfo.name must be present")
     private String name;
+
+    @NotNull
+    @Positive(message = "movieInfo.year must be a positive value")
     private Integer year;
     private List<String> cast;
     private LocalDate release_date;

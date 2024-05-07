@@ -3,6 +3,7 @@ package com.reactive.controller;
 import com.reactive.MovieInfoServiceApplication;
 import com.reactive.domain.MovieInfo;
 import com.reactive.service.MovieInfoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class MoviesInfoController {
 
     @PostMapping("/movieinfos")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<MovieInfo> addMovieInfo(@RequestBody MovieInfo movieInfo){
+    public Mono<MovieInfo> addMovieInfo(@RequestBody @Valid MovieInfo movieInfo){
         Mono<MovieInfo> movieInfoMono = movieInfoService.addMovieInfo(movieInfo);
         return movieInfoMono.log();
     }

@@ -104,4 +104,39 @@ public class MoviesInfoControllerUnitTest {
 
 
     }
+
+    @Test
+    void addMovieInfo_validation() {
+
+        var movieInfo = new MovieInfo(null, "", -2005, List.of("Christian Bale", "Micheal Cane"), LocalDate.parse("2005-06-15"));
+
+        when(moviesInfoServiceMock.addMovieInfo(isA(MovieInfo.class))).thenReturn(
+                Mono.just(new MovieInfo("mockId", "Batman Begins1", 2005, List.of("Christian Bale", "Micheal Cane"), LocalDate.parse("2005-06-15"))
+                ));
+
+        webTestClient
+                .post()
+                .uri("/v1/movieinfos")
+                .bodyValue(movieInfo)
+                .exchange()
+                .expectStatus()
+                .isBadRequest()
+                .expectBody(String.class)
+                .consumeWith(stringEntityExchangeResult -> {
+                    var responseBody = stringEntityExchangeResult.getResponseBody();
+                    System.out.println("responseBody : "+responseBody);
+                    assert responseBody != null;
+                })
+//                .expectBody(MovieInfo.class)
+//                .consumeWith(movieInfoEntityExchangeResult -> {
+//                    var savedMovieInfo = movieInfoEntityExchangeResult.getResponseBody();
+//                    assert savedMovieInfo != null;
+//                    assert savedMovieInfo.getMovieInfoId()!= null;
+//                    assertEquals("mockId", savedMovieInfo.getMovieInfoId());
+//
+//                });
+        ;
+
+
+    }
 }
