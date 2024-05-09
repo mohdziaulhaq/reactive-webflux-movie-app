@@ -28,5 +28,4 @@ public class MoviesInfoRestClient {
                 .log();
         //added comment to reload
     }
-
 }
