@@ -26,6 +26,7 @@ public class MoviesInfoRestClient {
                 .retrieve()
                 .bodyToMono(MovieInfo.class)
                 .log();
+        //added comment to reload
     }
 
 }
